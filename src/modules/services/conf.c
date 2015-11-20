@@ -23,10 +23,8 @@ conf_load(Module_Services *services)
    stop = cJSON_GetObjectItem(command, "stop");
    EINA_SAFETY_ON_NULL_GOTO(stop, free_json);
 
-#ifndef _WIN32
    restart = cJSON_GetObjectItem(command, "restart");
    EINA_SAFETY_ON_NULL_GOTO(restart, free_json);
-#endif
 
    services->commands.start = strdup(start->valuestring);
    EINA_SAFETY_ON_NULL_GOTO(services->commands.start, free_json);
@@ -34,10 +32,8 @@ conf_load(Module_Services *services)
    services->commands.stop = strdup(stop->valuestring);
    EINA_SAFETY_ON_NULL_GOTO(services->commands.stop, free_start);
 
-#ifndef _WIN32
    services->commands.restart = strdup(restart->valuestring);
    EINA_SAFETY_ON_NULL_GOTO(services->commands.restart, free_stop);
-#endif
 
    return;
 
