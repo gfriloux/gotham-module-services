@@ -140,12 +140,12 @@ _command_del(void *data,
    if (cs != ecore_exe_data_get(d->exe)) return EINA_TRUE;
    DBG("cs[%p] d[%p] gotham[%p] shotgun[%p]",
        cs, d, cs->services->gotham, cs->services->gotham->shotgun);
-/*
+
    DBG("Sending answer :\n%s", eina_strbuf_string_get(cs->buf));
    shotgun_message_send(cs->services->gotham->shotgun,
                         cs->jid, eina_strbuf_string_get(cs->buf),
                         SHOTGUN_MESSAGE_STATUS_ACTIVE, EINA_TRUE);
-*/
+
    _command_service_free(cs);
    return EINA_TRUE;
 }
@@ -175,7 +175,11 @@ command_start(Module_Services *services,
    _INVALID(command);
 
    DBG("Starting service [%s]", command->message + 15);
+#ifdef _WIN32
+   command_win32_start(services, command, command->message + 15);
+#else
    _RUN(services, command->jid, services->commands.start, command->message + 15);
+#endif
 }
 
 #ifndef _WIN32

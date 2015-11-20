@@ -41,5 +41,9 @@ void command_restart(Module_Services *services, Gotham_Citizen_Command *command)
 #endif
 void command_stop(Module_Services *services, Gotham_Citizen_Command *command);
 
+#ifdef _WIN32
+void command_win32_start(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
+#endif
+
 char * utils_strdupf(const char *s, ...);
 #endif

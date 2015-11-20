@@ -9,6 +9,7 @@ src_modules_services_la_SOURCES = \
    src/modules/services/services.c \
    src/modules/services/services.h \
    src/modules/services/command.c \
+   src/modules/services/command_win32.c \
    src/modules/services/event.c \
    src/modules/services/conf.c \
    src/modules/services/utils.c
