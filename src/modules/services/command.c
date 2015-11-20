@@ -174,7 +174,6 @@ command_start(Module_Services *services,
    DBG("services[%p] command[%p]", services, command);
    _INVALID(command);
 
-   DBG("Starting service [%s]", command->message + 15);
 #ifdef _WIN32
    command_win32_start(services, command, command->message + 15);
 #else
@@ -196,8 +195,14 @@ void
 command_stop(Module_Services *services,
              Gotham_Citizen_Command *command)
 {
+   DBG("services[%p] command[%p]", services, command);
    _INVALID(command);
+
+#ifdef _WIN32
+   command_win32_stop(services, command, command->message + 14);
+#else
    _RUN(services, command->jid, services->commands.stop, command->message + 14);
+#endif
 }
 
 #undef _ANSWER
