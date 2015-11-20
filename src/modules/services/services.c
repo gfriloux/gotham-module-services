@@ -34,8 +34,9 @@ module_register(Gotham *gotham)
    gotham_modules_command_add("services", ".service restart",
                               "[.service restart servicename] - "
                               "This command will restart a given service.");
+#ifndef _WIN32
    conf_load(services);
-
+#endif
    return services;
 }
 
