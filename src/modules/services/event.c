@@ -18,11 +18,9 @@ event_citizen_command(void *data,
    if ( (command->command[1]) &&
         (!strcmp(command->command[1], "start")))
      command_start(services, command);
-#ifndef _WIN32
    else if ( (command->command[1]) &&
         (!strcmp(command->command[1], "restart")))
      command_restart(services, command);
-#endif
    else if ( (command->command[1]) &&
         (!strcmp(command->command[1], "stop")))
      command_stop(services, command);

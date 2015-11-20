@@ -181,15 +181,19 @@ command_start(Module_Services *services,
 #endif
 }
 
-#ifndef _WIN32
 void
 command_restart(Module_Services *services,
                 Gotham_Citizen_Command *command)
 {
    _INVALID(command);
+
+#ifdef _WIN32
+   command_win32_stop(services, command, command->message + 17);
+   command_win32_start(services, command, command->message + 17);
+#else
    _RUN(services, command->jid, services->commands.restart, command->message + 17);
-}
 #endif
+}
 
 void
 command_stop(Module_Services *services,

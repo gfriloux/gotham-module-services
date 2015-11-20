@@ -20,9 +20,7 @@ typedef struct _Module_Services
    struct
    {
       const char *start,
-#ifndef _WIN32
                  *restart,
-#endif
                  *stop;
    } commands;
 } Module_Services;
@@ -36,13 +34,12 @@ typedef struct _Module_Services
 void conf_load(Module_Services *services);
 
 void command_start(Module_Services *services, Gotham_Citizen_Command *command);
-#ifndef _WIN32
 void command_restart(Module_Services *services, Gotham_Citizen_Command *command);
-#endif
 void command_stop(Module_Services *services, Gotham_Citizen_Command *command);
 
 #ifdef _WIN32
 void command_win32_start(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
+void command_win32_stop(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
 #endif
 
 char * utils_strdupf(const char *s, ...);
