@@ -26,3 +26,8 @@ ltmain.sh
 missing
 .deps
 stamp-h1
+.dirstamp
+.libs
+*.lo
+*.o
+*.la
