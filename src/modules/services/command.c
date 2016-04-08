@@ -142,9 +142,17 @@ _command_del(void *data,
        cs, d, cs->services->gotham, cs->services->gotham->shotgun);
 
    DBG("Sending answer :\n%s", eina_strbuf_string_get(cs->buf));
-   shotgun_message_send(cs->services->gotham->shotgun,
-                        cs->jid, eina_strbuf_string_get(cs->buf),
-                        SHOTGUN_MESSAGE_STATUS_ACTIVE, EINA_TRUE);
+
+   DBG("cs->jid[%s] cs->services->gotham->alfred->jid[%s]",
+       cs->jid, cs->services->gotham->alfred->jid);
+
+   if (strncmp(cs->jid, cs->services->gotham->alfred->jid, strlen(cs->services->gotham->alfred->jid)))
+     shotgun_message_send(cs->services->gotham->shotgun,
+                          cs->jid, eina_strbuf_string_get(cs->buf),
+                          SHOTGUN_MESSAGE_STATUS_ACTIVE, EINA_TRUE);
+   else
+     module_json_answer(".service", "", EINA_TRUE, eina_strbuf_string_get(cs->buf),
+                        cs->services->gotham, cs->jid);
 
    _command_service_free(cs);
    return EINA_TRUE;

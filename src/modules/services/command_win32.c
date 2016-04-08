@@ -92,9 +92,13 @@ error:
    do {                                                                        \
       if (!(_a))                                                               \
         break;                                                                 \
-      gotham_command_send(_b, _c);                                             \
+      if (_b->citizen->type == GOTHAM_CITIZEN_TYPE_ALFRED)                     \
+        module_json_answer(".service", "", EINA_FALSE, _c, _b->citizen->gotham,\
+                           _b->citizen->jid);                                  \
+      else gotham_command_send(_b, _c);                                        \
       goto close_service;                                                      \
    } while (0)
+/* "debug" */
 
 void
 command_win32_start(Module_Services *services,

@@ -42,5 +42,7 @@ void command_win32_start(Module_Services *services, Gotham_Citizen_Command *comm
 void command_win32_stop(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
 #endif
 
+void module_json_answer(const char *cmd, const char *params, Eina_Bool status, const char *content, Gotham *gotham, const char *jid);
+
 char * utils_strdupf(const char *s, ...);
 #endif
