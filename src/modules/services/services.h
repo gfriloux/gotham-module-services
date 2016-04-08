@@ -38,8 +38,8 @@ void command_restart(Module_Services *services, Gotham_Citizen_Command *command)
 void command_stop(Module_Services *services, Gotham_Citizen_Command *command);
 
 #ifdef _WIN32
-void command_win32_start(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
-void command_win32_stop(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
+Eina_Bool command_win32_start(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
+Eina_Bool command_win32_stop(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
 #endif
 
 void module_json_answer(const char *cmd, const char *params, Eina_Bool status, const char *content, Gotham *gotham, const char *jid);

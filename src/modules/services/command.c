@@ -175,6 +175,15 @@ _command_error(void *data,
    return EINA_TRUE;
 }
 
+#define _MSG(_a, _b, _c)                                                       \
+   do {                                                                        \
+      if (_a->citizen->type == GOTHAM_CITIZEN_TYPE_ALFRED)                     \
+        module_json_answer(".service", _b, EINA_TRUE, _c,                      \
+                           _a->citizen->gotham, _a->citizen->jid);             \
+      else gotham_command_send(_a, _b);                                        \
+   } while(0)
+/* "debug" */
+
 void
 command_start(Module_Services *services,
               Gotham_Citizen_Command *command)
@@ -183,7 +192,10 @@ command_start(Module_Services *services,
    _INVALID(command);
 
 #ifdef _WIN32
-   command_win32_start(services, command, command->message + 15);
+   if (!command_win32_start(services, command, command->message + 15))
+     return;
+
+   _MSG(command, "start", "Service started");
 #else
    _RUN(services, command->jid, services->commands.start, command->message + 15);
 #endif
@@ -197,7 +209,10 @@ command_restart(Module_Services *services,
 
 #ifdef _WIN32
    command_win32_stop(services, command, command->message + 17);
-   command_win32_start(services, command, command->message + 17);
+   if (!command_win32_start(services, command, command->message + 17))
+     return;
+
+   _MSG(command, "restart", "Service restarted");
 #else
    _RUN(services, command->jid, services->commands.restart, command->message + 17);
 #endif
@@ -211,7 +226,10 @@ command_stop(Module_Services *services,
    _INVALID(command);
 
 #ifdef _WIN32
-   command_win32_stop(services, command, command->message + 14);
+   if (!command_win32_stop(services, command, command->message + 14))
+     return;
+
+   _MSG(command, "stop", "Service is stopping");
 #else
    _RUN(services, command->jid, services->commands.stop, command->message + 14);
 #endif

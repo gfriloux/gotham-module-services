@@ -88,19 +88,19 @@ error:
 
 #undef _ERR
 
-#define _ERR(_a, _b, _c)                                                       \
+#define _ERR(_a, _b, _c, _d)                                                   \
    do {                                                                        \
       if (!(_a))                                                               \
         break;                                                                 \
       if (_b->citizen->type == GOTHAM_CITIZEN_TYPE_ALFRED)                     \
-        module_json_answer(".service", "", EINA_FALSE, _c, _b->citizen->gotham,\
+        module_json_answer(".service", _d, EINA_FALSE, _c, _b->citizen->gotham,\
                            _b->citizen->jid);                                  \
       else gotham_command_send(_b, _c);                                        \
       goto close_service;                                                      \
    } while (0)
 /* "debug" */
 
-void
+Eina_Bool
 command_win32_start(Module_Services *services,
                     Gotham_Citizen_Command *command,
                     const char *name)
@@ -113,32 +113,32 @@ command_win32_start(Module_Services *services,
    DBG("services[%p] command[%p] name[%s]", services, command, name);
 
    r = _command_win32_init(&manager, &service, &status, name);
-   _ERR(!r, command, "Failed to access service");
+   _ERR(!r, command, "Failed to access service", "start");
 
-   _ERR((status.dwCurrentState != SERVICE_STOPPED) &&
-        (status.dwCurrentState != SERVICE_STOP_PENDING),
-        command, "Service already started");
+   if ((status.dwCurrentState != SERVICE_STOPPED) &&
+       (status.dwCurrentState != SERVICE_STOP_PENDING))
+     goto end;
 
    r = _command_win32_wait_state(service, SERVICE_STOP_PENDING);
-   _ERR(!r, command, "Service stuck in a stop state");
+   _ERR(!r, command, "Service stuck in a stop state", "start");
 
    r = StartService(service, 0, NULL);
-   _ERR(!r, command, "Failed to start service");
+   _ERR(!r, command, "Failed to start service", "start");
 
    r = _command_win32_wait_state(service, SERVICE_START_PENDING);
-   _ERR(!r, command, "Service stuck in a start state");
+   _ERR(!r, command, "Service stuck in a start state", "start");
 
-   gotham_command_send(command, "Service started");
-
+end:
    CloseServiceHandle(service);
    CloseServiceHandle(manager);
-   return;
+   return EINA_TRUE;
 
 close_service:
    CloseServiceHandle(service);
+   return EINA_FALSE;
 }
 
-void
+Eina_Bool
 command_win32_stop(Module_Services *services,
                    Gotham_Citizen_Command *command,
                    const char *name)
@@ -151,25 +151,24 @@ command_win32_stop(Module_Services *services,
    DBG("services[%p] command[%p] name[%s]", services, command, name);
 
    r = _command_win32_init(&manager, &service, &status, name);
-   _ERR(!r, command, "Failed to access service");
+   _ERR(!r, command, "Failed to access service", "stop");
 
    _ERR(status.dwCurrentState == SERVICE_STOPPED, command,
-        "Service is already stopped");
+        "Service is already stopped", "stop");
 
    r = _command_win32_wait_state(service, SERVICE_STOP_PENDING);
-   _ERR(!r, command, "Service stuck in a stop state");
+   _ERR(!r, command, "Service stuck in a stop state", "stop");
 
    r = ControlService(service, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS) &status);
-   _ERR(!r, command, "Failed to stop service");
-
-   gotham_command_send(command, "Service is stopping");
+   _ERR(!r, command, "Failed to stop service", "stop");
 
    CloseServiceHandle(service);
    CloseServiceHandle(manager);
-   return;
+   return EINA_TRUE;;
 
 close_service:
    CloseServiceHandle(service);
+   return EINA_FALSE;
 }
 
 #undef _ERR
