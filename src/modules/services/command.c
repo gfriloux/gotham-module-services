@@ -235,5 +235,19 @@ command_stop(Module_Services *services,
 #endif
 }
 
+void
+command_status(Module_Services *services,
+               Gotham_Citizen_Command *command)
+{
+   DBG("services[%p] command[%p]", services, command);
+   _INVALID(command);
+
+#ifdef _WIN32
+   command_win32_status(services, command, command->message + 16);
+#else
+   _RUN(services, command->jid, services->commands.stop, command->message + 16);
+#endif
+}
+
 #undef _ANSWER
 #undef _INVALID

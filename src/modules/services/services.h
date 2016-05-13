@@ -36,10 +36,12 @@ void conf_load(Module_Services *services);
 void command_start(Module_Services *services, Gotham_Citizen_Command *command);
 void command_restart(Module_Services *services, Gotham_Citizen_Command *command);
 void command_stop(Module_Services *services, Gotham_Citizen_Command *command);
+void command_status(Module_Services *services, Gotham_Citizen_Command *command);
 
 #ifdef _WIN32
 Eina_Bool command_win32_start(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
 Eina_Bool command_win32_stop(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
+Eina_Bool command_win32_status(Module_Services *services, Gotham_Citizen_Command *command, const char *name);
 #endif
 
 void module_json_answer(const char *cmd, const char *params, Eina_Bool status, const char *content, Gotham *gotham, const char *jid);

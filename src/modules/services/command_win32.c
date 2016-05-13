@@ -164,12 +164,76 @@ command_win32_stop(Module_Services *services,
 
    CloseServiceHandle(service);
    CloseServiceHandle(manager);
-   return EINA_TRUE;;
+   return EINA_TRUE;
 
 close_service:
    CloseServiceHandle(service);
    return EINA_FALSE;
 }
 
+#define _MSG(_a, _b, _c)                                                       \
+   do {                                                                        \
+      if (_a->citizen->type == GOTHAM_CITIZEN_TYPE_ALFRED)                     \
+        module_json_answer(".service", _b, EINA_TRUE, _c,                      \
+                           _a->citizen->gotham, _a->citizen->jid);             \
+      else gotham_command_send(_a, _b);                                        \
+   } while(0)
+/* "debug" */
+
+Eina_Bool
+command_win32_status(Module_Services *services,
+                     Gotham_Citizen_Command *command,
+                     const char *name)
+{
+   SERVICE_STATUS_PROCESS ssStatus;
+   DWORD dwBytesNeeded;
+   SC_HANDLE manager,
+             service;
+   SERVICE_STATUS_PROCESS status;
+   BOOL r;
+   char *s;
+
+   DBG("services[%p] command[%p] name[%s]", services, command, name);
+
+   r = _command_win32_init(&manager, &service, &status, name);
+   _ERR(!r, command, "Failed to access service", "status");
+
+#define _CASE(_a, _b)                                                          \
+   case _a:                                                                    \
+     {                                                                         \
+        s = utils_strdupf("Service %s : "_b, name);                            \
+        break;                                                                 \
+     }
+/* "debug" */
+
+   switch (status.dwCurrentState)
+     {
+      _CASE(SERVICE_CONTINUE_PENDING, "The service is about to continue.")
+      _CASE(SERVICE_PAUSE_PENDING, "The service is pausing.")
+      _CASE(SERVICE_PAUSED, "The service is paused.")
+      _CASE(SERVICE_RUNNING, "The service is running.")
+      _CASE(SERVICE_START_PENDING, "The service is starting.")
+      _CASE(SERVICE_STOP_PENDING, "The service is stopping.")
+      _CASE(SERVICE_STOPPED, "The service has stopped.")
+      default:
+        {
+           s = utils_strdupf("Service %s : The service is in an unknown state", name);
+           break;
+        }
+     }
+
+   _MSG(command, "status", s ? s : "We ran into memory allocation error");
+
+   free(s);
+   CloseServiceHandle(service);
+   CloseServiceHandle(manager);
+   return EINA_TRUE;
+
+close_service:
+   CloseServiceHandle(service);
+   return EINA_FALSE;
+}
+
+#undef _MSG
 #undef _ERR
 #endif

@@ -24,6 +24,9 @@ event_citizen_command(void *data,
    else if ( (command->command[1]) &&
         (!strcmp(command->command[1], "stop")))
      command_stop(services, command);
+   else if ( (command->command[1]) &&
+        (!strcmp(command->command[1], "status")))
+     command_status(services, command);
    /* TODO : Handle unknown param */
 
    return EINA_TRUE;
