@@ -60,10 +60,25 @@ AC_CONFIG_FILES([
 Makefile
 ])
 
-SERVICES_REQUIRES="eina ecore gotham"
+SERVICES_REQUIRES=
+
+case "$host_os" in
+  mingw*)
+    build_windows="yes"
+    SERVICES_REQUIRES="evil"
+    AC_DEFINE([HAVE_EVIL], [1], [Set to 1 if Evil package is installed])
+  ;;
+  *)
+    build_unix="yes"
+  ;;
+esac
+
+SERVICES_REQUIRES="${SERVICES_REQUIRES} eina ecore shotgun gotham"
 PKG_CHECK_MODULES(SERVICES, [$SERVICES_REQUIRES], [build_services=yes], [build_services=no])
 
 AM_CONDITIONAL(BUILD_SERVICES, [test "x${build_services}" = "xyes"])
+AM_CONDITIONAL(BUILD_WINDOWS, [test "x${build_windows}" = "xyes"])
+AM_CONDITIONAL(BUILD_UNIX, [test "x${build_unix}" = "xyes"])
 
 AC_SUBST([SERVICES_REQUIRES])
 AC_SUBST([SERVICES_CFLAGS])
